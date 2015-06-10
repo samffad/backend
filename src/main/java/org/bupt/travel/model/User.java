@@ -5,6 +5,7 @@ package org.bupt.travel.model;
 import java.util.Date;
 
 
+
 public class User{
  
 	  // 【in 查询使用】
@@ -36,9 +37,9 @@ public class User{
  
 	 /**
      * 描述:gender     
-     * 字段: gender  INT(10)  
+     * 字段: gender  VARCHAR(2)  
      */	
-	private java.lang.Integer gender;
+	private java.lang.String gender;
 
  
 	 /**
@@ -54,27 +55,8 @@ public class User{
      */	
 	private java.lang.String photoPath;
 
-	
  
-	public User(String name) {
-		super();
-		this.name = name;
-	}
-	
-	
-
-	public User(String name, String nickname, Integer gender, String password,
-			String photoPath) {
-		super();
-		this.name = name;
-		this.nickname = nickname;
-		this.gender = gender;
-		this.password = password;
-		this.photoPath = photoPath;
-	}
-
-
-
+ 
 	public User(){
 	}
 
@@ -129,11 +111,11 @@ public class User{
 	
     
     
-	public void setGender(java.lang.Integer gender) {
+	public void setGender(java.lang.String gender) {
 		this.gender = gender;
 	}
 	
-	public java.lang.Integer getGender() {
+	public java.lang.String getGender() {
 		return this.gender;
 	}
 	

@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.sym.Name;
+
 @Service
 public class UserServiceImpl implements UserService{
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService{
 			return msg;
 		}
 		
-		List<User> userList = userDao.findByCondition(new User(username));
+		List<User> userList = userDao.getUserInfoByName(username);
 		if(userList == null || userList.size() == 0) {
 			msg.setCode(Const.STATUS_BIZ_ERROR);
 			msg.setMsg("用户名不存在");
@@ -51,6 +53,7 @@ public class UserServiceImpl implements UserService{
 		User oneUser = userList.get(0);
 		if(oneUser.getPassword().equals(pwd)) {
 			List<String> pwds = new ArrayList<String>(oneUser.getId()) ;
+			msg.setDataList(pwds);
 			return msg;
 		}
 		else {
@@ -84,15 +87,22 @@ public class UserServiceImpl implements UserService{
 			return msg;
 		}
 		
-		List<User> userList = userDao.findByCondition(new User(username));
+		List<User> userList = userDao.getUserInfoByName(username);
 		if(userList == null || userList.size() == 0) {
-			User oneUser = new User(username, nickname, Integer.valueOf(gender), pwd, null);
-			userDao.save(oneUser);
+			User oneUser = null;
+			 try {
+				 userDao.insertUser(username, nickname, gender, pwd, null);;
+				 oneUser = userDao.getUserInfoByName(username).get(0);
+			} catch (Exception e) {
+				msg.setCode(Const.STATUS_BIZ_ERROR);
+				msg.setMsg("系统错误");
+				return msg;
+			}
 			
 			UserVo vo = new UserVo(oneUser.getId(), oneUser.getName(), oneUser.getNickname(), oneUser.getGender(), oneUser.getPhotoPath());
 			ArrayList<UserVo> vos = new ArrayList<UserVo>();
 			vos.add(vo);
-			
+			msg.setDataList(vos);
 			return msg;
 		}
 		else {

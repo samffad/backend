@@ -4,7 +4,9 @@
 package org.bupt.travel.dao;
 import org.bupt.travel.model.*;
 import org.bupt.base.dao.ibatis.MyBatisBaseDao;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -14,4 +16,11 @@ import java.util.Date;
  * @Date	
  *
  */
-public interface UserDao extends MyBatisBaseDao<User, java.lang.Integer> {}
+public interface UserDao extends MyBatisBaseDao<User, java.lang.Integer> {
+
+	List<User> getUserInfoByName(String name);
+
+
+
+	void insertUser(String name, String nickname, String gender, String passwd,
+			String path);}

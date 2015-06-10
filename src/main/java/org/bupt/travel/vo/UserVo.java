@@ -8,11 +8,11 @@ public class UserVo {
 
 	private java.lang.String nickname;
 
-	private java.lang.Integer gender;
+	private java.lang.String gender;
 
 	private java.lang.String photoPath;
 
-	public UserVo(Integer id, String name, String nickname, Integer gender,
+	public UserVo(Integer id, String name, String nickname, String gender,
 			String photoPath) {
 		super();
 		this.id = id;
@@ -46,11 +46,11 @@ public class UserVo {
 		this.nickname = nickname;
 	}
 
-	public java.lang.Integer getGender() {
+	public java.lang.String getGender() {
 		return gender;
 	}
 
-	public void setGender(java.lang.Integer gender) {
+	public void setGender(java.lang.String gender) {
 		this.gender = gender;
 	}
 

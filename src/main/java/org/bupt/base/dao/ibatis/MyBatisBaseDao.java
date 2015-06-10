@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.bupt.travel.model.User;
 import org.mybatis.spring.SqlSessionTemplate;
 
 public abstract interface  MyBatisBaseDao<T,PK extends Serializable > {

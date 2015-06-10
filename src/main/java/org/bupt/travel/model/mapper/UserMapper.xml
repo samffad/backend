@@ -21,9 +21,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		id,name,nickname,gender,password,photo_path
 	    ]]>
 	</sql>
+	
+	<select id="getuserinfo" resultMap="RM_User">
+    	SELECT <include refid="columns" />
+    	FROM user
+    	WHERE
+    	name = #{name}
+    </select>
 
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
-	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	<insert id="insert">
     <![CDATA[
         INSERT INTO user (
         	id ,
