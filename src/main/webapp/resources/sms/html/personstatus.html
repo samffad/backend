@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>链家网-店面管理系统</title>
+<meta charset="utf-8">
+<link href="../asset/img/favicon.ico" type="image/x-icon" rel=icon><link href="../asset/img/favicon.ico" type="image/x-icon" rel="shortcut icon">
+<link rel="stylesheet" type="text/css" href="../asset/css/common.css?v=1.72"">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="../dep/bootstrap/css/bootstrap.min.css?v=1.72"" rel="stylesheet" media="screen">
+
+<!--[if lt IE 9]>
+ <script type="text/javascript" src="../dep/support/html5.js?v=1.72""></script>
+ <script src="../dep/support/respond.min.js?v=1.72""></script>
+<![endif]-->
+<script type="text/javascript" src="../dep/dep.js?v=1.72"></script>
+<script src="../asset/js/common/common.js?v=1.72""></script>
+  
+  <link rel="stylesheet" type="text/css" href="../asset/css/index.css?v=1.72"">
+  </head>
+  <body>
+
+<div class="max-wrapper">
+  <header class="header">
+  <div class="logo">
+    <p class="sms">SMS<span class="sys-name">链家店面管理系统</span></p>
+    <p class="sms-all">Store Management System</p>
+  </div>
+   <span class="sms-current-user" id="showUserName"></span>
+   <script type="text/template" style="display:none" id="showUserNameTemplate">
+    <%if(code ==1){%>
+      你好，<%=data.userName%>
+      <%if(!data.enterSystemDirectly){%>
+        <a href="<%=config.changeStore%>">切换店面</a>
+      <%}%>
+      <a href="<%=config.logoutUrl%>">退出</a>
+    <%}else{%>
+      接口错误，请刷新重试
+    <%}%>
+   </script>
+</header>
+
+<div class="navbar" id="userMenu">
+</div>
+<script type="text/template" id="userMenuTemplate">
+<div class="navbar-inner">
+<ul class="nav">
+  <%var version='1.72'%>
+  <%for(var i = 0 ,len = permissions.length;i < len;i++){%>
+    <%// MainArea 区首页 ,MainGM 副总首页%>
+    <%if(permissions[i] == "MainStore" || permissions[i] == "MainArea" || permissions[i] == "MainGM"){%>
+      <li class="pageIndex"><a href="./index.html?random=">首页</a></li>
+    <%}else if(permissions[i] == "BusinessManagerStore"){%>
+        <li class="pageYyStatus"><a href="./mendianStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "MentorRelationManager"){%>
+      <li class="pagePersonMan"><a href="./manager.html?random=<%=version%>">师徒关系</a></li>
+    <%}else if(permissions[i] == "AccountantManager"){%>
+      <li class="importPage"><a href="./import.html?random=<%=version%>">录入成本</a></li>
+    <%}else if(permissions[i] == "BusinessManagerArea"){%>
+        <%// 区营业状况管理%>
+         <li class="pageYyStatus"><a href="./areaStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "BusinessManagerGM"){%>
+        <%// 副总营业状况管理%>
+        <li class="pageYyStatus"><a href="./fuzongStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "DianMianTong"){%>
+        <li class="pageShops"><a href="http://172.16.4.120/homeStore/login.jsp" target="_blank">店面通</a></li>
+    <%}%>
+  <%}%>
+  
+</ul>
+ </div>
+</script>  
+  <ul class="nav nav-tabs" id="reportMenu">
+
+</ul>
+<script type="text/template" id="reportMenuTemplate">
+<%for(var i = 0 ,len = menu.length; i < len;i++){%>
+	<li class="<%=menu[i].type%>"><a href="<%=menu[i].url%>"><%=menu[i].title%></a></li>
+<%}%>
+</script>
+<script>
+var version = '1.72';
+(function(){
+	function initReportMenu(){
+		var user = window.$currentUser;
+
+		var subUrl = [];
+		
+		var query = {};//$.queryToJson($.parseURL(location.href).query);
+		var pageQuery = $.queryToJson($.parseURL(location.href).query);
+		if(pageQuery.time){
+			query.time = pageQuery.time;
+		}
+		
+		query.version = version;
+		var permissions = user.permissions;
+		if(!$.isArray(permissions)){
+			permissions = permissions.split(",")
+		}
+
+		var perims = "store";
+		if($.inArray("BusinessManagerGM",permissions) >=0){
+			perims = "gm"
+		}else if($.inArray("BusinessManagerArea",permissions) >=0){
+			perims = "area"
+		}
+
+		// 副总经理 区经理都会有大区
+		if(perims == "gm"){
+			subUrl.push({
+				url:$.joinURL("./fuzongStatus.html",query),
+				title:"大区营业状况",
+				type:"fuzongPanel"
+			})
+			if(pageQuery.areaCode){
+				query.areaCode = pageQuery.areaCode;
+			}
+			subUrl.push({
+				url:$.joinURL("./areaStatus.html",query),
+				title:"门店营业状况",
+				type:"areaPanel"
+			})
+		}else if(perims == "area"){
+			subUrl.push({
+				url:$.joinURL("./areaStatus.html",query),
+				title:"门店营业状况",
+				type:"areaPanel"
+			})
+		}else{
+			subUrl.push({
+				url:$.joinURL("./mendianStatus.html",query),
+				title:"门店营业状况",
+				type:"shopPanel"
+			})
+		}
+		
+		if(pageQuery.storeCode){
+			query.storeCode = pageQuery.storeCode;
+		}
+		subUrl.push({
+			url:$.joinURL("./personstatus.html",query),
+			title:"经纪人作业详情",
+			type:"personPanel"
+		})
+		var tpl = _.template($("#reportMenuTemplate").html());
+		$("#reportMenu").html(tpl({
+			menu:subUrl
+		}));
+		var curPath = $.parseURL(location.href).path;
+		var paths = curPath.split("/");
+		var curPage = paths[paths.length-1];
+
+		for(var i = 0 ,len = subUrl.length; i < len;i++){
+			if(subUrl[i].url.indexOf(curPage) >=0){
+				$("."+subUrl[i].type).addClass("active")
+				break;
+			}
+		}
+	}
+	
+
+	if(window.$currentUser){
+		initReportMenu();
+	}else{
+		$.listener.on("getUserInfo",function(){
+			initReportMenu();
+		});
+	}
+})();
+</script> 
+  <form id="smsSearchForm" class="form-inline sms-search" onsubmit="return false;">
+    选择时间
+    <select class="input-small year" id="year"></select>
+    <select class="input-mini month" id="month"></select>
+    <input type="hidden" name="yearMonth" id="yearMonth" value="">
+
+    <a href="javascript:;" class="actCurrentMonth">本月</a>
+
+    <div class="input-append selectShop" style="display:none;">
+      <label>选择店面:  
+      <span id="areaName" style="position:relative;display:none;">
+        <input type="text" class="span2" name="areaName" placeholder="全部大区" style="margin-right:0px"><button class="btn actFocus">
+        <i class="icon-th-list"></i>
+      </button>
+        <input type="hidden" id="areaCode" name="areaCode" value="">
+        <ul class="dropdown-menu" style="display:none;margin-left:0;">
+      </ul>
+      </span>
+
+      <span id="storeName" style="position:relative;display:none;">
+        <input type="text" name="storeName"  class="span2" placeholder="全部门店" style="margin-right:0px;"><button class="btn actFocus">
+        <i class="icon-th-list"></i>
+      </button>
+        <input type="hidden" id="storeCode" name="storeCode" value="">
+        <ul class="dropdown-menu" style="display:none;margin-left:0;">
+      </ul>
+    </span>
+      </label>
+    </div>
+
+    <button type="button" class="btn actSearch">查看</button>
+    <button type="button" class="btn actExport">导出</button>
+  </form>
+  <div id="reports">
+      <div class="loading">loading...</div>
+  </div>
+<script type="text/template" id="reportsTemplate">
+  <%if(typeof list != 'undefined' && list.length >0){%>
+  <%for(var i = 0 ,len = list.length; i < len;i++){%>
+    <div class="comp" compType="<%=list[i].type%>" id="comp<%=i+1%>">
+      <div class="comp-content" >
+        <!--表格-->
+        <%if(list[i].type == "table"){%>
+          <table class="table table-bordered table-hover ">
+            <thead>
+            <%=$.parseTH(list[i].label)%>
+            </thead>
+            <tbody>
+            <%if(!list[i].dataList.length){%>
+              <tr>
+                <td colspan="<%=list[i].label.length%>">暂无数据
+                </td>
+              </tr>
+            <%}else{%>
+            <%for(var j = 0 ; j < list[i].dataList.length;j++){%>
+              <tr>
+              <%for(var k = 0 ; k < list[i].dataList[j].length;k++){%>
+                <td class="text-center"><%=$.trim(list[i].dataList[j][k])== "null"?"":list[i].dataList[j][k]%></td>
+              <%}%>
+              </tr>
+            <%}}%>
+            </tbody>
+          </table>
+          <%if(list[i].totalPage && list[i].totalPage >1){%>
+          <div class="pagination pagination-centered">
+            <ul>
+                <li class="<%=list[i].curPage==1?'disabled':'actPage'%>" page="<%=list[i].curPage-1%>"><a href="#">&laquo;</a></li>
+              <%if(list[i].totalPage <= 10){%>
+                  <%for(var j = 1; j <= list[i].totalPage;j++){%>
+                    <li class="<%=list[i].curPage==j?'active disabled':' actPage'%>" page="<%=j%>"><a href="#"><%=j%></a></li>
+                 <% }%>
+              <%}else{%>
+                  <li class="<%=list[i].curPage==1?'active disabled':' actPage'%>" page="1"><a href="#">1</a></li>
+                  <%if(list[i].curPage > 8){%>
+                       <li class="disabled"><a href="javascript:;">…</a></li>
+                  <%}%>
+                  <%var startPage = Math.max(list[i].curPage-5,2),endPage = Math.min(list[i].curPage+5,list[i].totalPage-1);%>
+                  <%for(var j = startPage;j<= endPage;j++){%>
+                      <li class="<%=list[i].curPage==j?'active disabled':' actPage'%>" page="<%=j%>"><a href="#"><%=j%></a></li>
+                  <%}%>
+                  <%if(list[i].curPage < list[i].totalPage-3){%>
+                      <li class="disabled"><a href="javascript:;">…</a></li>
+                  <%}%>
+                  <li class="<%=list[i].curPage==list[i].totalPage?'active disabled':' actPage'%>" page="<%=list[i].totalPage%>"><a href="#"><%=list[i].totalPage%></a></li>
+              <%}%>
+              <li class="<%=list[i].curPage==list[i].totalPage?'disabled':'actPage'%>" page="<%=parseInt(list[i].curPage)+1%>"><a href="#">»</a></li>
+            </ul>
+          </div>
+          <%}%>
+        <%}%>
+      </div>
+    </div>
+  <%}%>
+  <%}else{%>
+    接口请求数据为空
+  <%}%>
+</script>
+<div class="pre" style="margin-bottom:60px;">
+<h4>温馨提示：</h4>
+<p>1、作为师傅收入：如果该经纪人是师傅，作为师傅收入，显示的是所选月份所有徒弟实际贡献给他的金额总和。</p>
+<p>2、作为徒弟贡献：如果该经纪人是徒弟，作为徒弟贡献，显示的是所选月份他为师傅贡献的实际金额，有正有负。</p>
+<p>3、底薪：低级别新入职员工的基本薪资。</p>
+<p>4、保障薪资：对于A1以上级别的员工，当月业绩不佳，为保证正常生活所需，公司提供了无息借款形式的保障薪资。</p>
+<p>5、保险及公积金：此处指的是公司应为员工缴纳的部分，计入店面成本。</p>
+</div>
+</div>
+<iframe id="downloadIframe" name="downloadIframe" style="width:0px;height:0px;border:0px;display:none;"></iframe>
+
+<script type="text/javascript">
+var pageConfig = {
+  page:"pageYyStatus"
+};
+
+</script>
+<footer class="footer">
+	<p>北京链家房地产经纪有限公司</p>
+	<p>Copyright©2014 All rights Reserved</p>
+</footer>
+
+<script type="text/javascript">
+
+require.config({
+	baseUrl: "../asset/js",
+	paths: {
+		'echarts' : '../../dep/echarts/echarts-all',
+		'echarts/chart/bar' : '../../dep/echarts/echarts-all',
+		'echarts/chart/line' : '../../dep/echarts/echarts-all',
+		'echarts/chart/pie' : '../../dep/echarts/echarts-all',
+		'zrender':'../../dep/echarts/echarts-all',
+		'common': 'common/common'
+	},
+	urlArgs:  'v=?1.72'
+});
+// 基础服务
+require(["sms/smscommon"],function(common){
+	
+})
+</script> 
+<script type="text/javascript">
+
+var getCurParam = (function(){
+  var url = $.parseURL(location.href);
+  return $.queryToJson(url.query);
+})();
+
+if($.config){
+  pageInit();
+}else{
+  $.listener.on("commmReady",function(){
+    pageInit();
+  });
+}
+
+function pageInit(){
+  var config = $.config;
+
+
+  $(".actExport").attr("url",config.api.jingjirendataDown)
+
+  var searchData = getCurParam.time,
+      searchTime = searchData;
+  var args = {
+    viewType:"table",
+    perPage:20,
+    curPage:1
+  };
+  if(searchData){
+    searchData = searchData.split("-");
+    args.year = parseInt(searchData[0]);
+    args.month = parseInt(searchData[1]);
+    args.yearMonth = parseInt(searchData[0])+""+(searchData[1]);
+  }else{
+    var yearMonth = $.formatDate(new Date(),"yyyyMM")
+    args.yearMonth = yearMonth;
+  }
+  if(getCurParam.storeCode){
+    args.storeCode = getCurParam.storeCode;
+    $("#storeCode").val(args.storeCode);
+  }
+
+ (function(){
+    if(!searchData){
+      return;
+    }
+    var as = $(".nav-tabs a");
+    as.each(function(){
+      var a = $(this);
+      a.attr("href",a.attr("href")+"&time="+searchTime)
+    })
+  })();
+
+ function parseDateModel(obj){
+    var label = obj.label && JSON.parse(obj.label.replace(/\'/g,"\""));
+    obj.label = label;
+    obj.sort = obj.sort && JSON.parse(obj.sort.replace(/\'/g,"\""));
+
+    for(var i = 0 ; i < obj.dataList.length;i++){
+      if(_.isArray(obj.dataList[i])){
+        obj.dataList[i]=obj.dataList[i][0];
+      }
+      obj.dataList[i] = obj.dataList[i].split(",");
+      //console.log(obj.dataList[i]);
+    }
+    return obj;
+  }
+
+  var reqModel = new $.BaseModel({},{
+    url:config.api.jingjirendata,
+    // url:"../test/jingjirendata.json",
+    args:args,
+    parse:function(data){
+      if(data.code == "1"){
+        var result = {
+          code:1,
+          data:{}
+        }
+        result.data.list = [];
+
+        for(var i = 0 ,len = data.dataList.length; i < len;i++){
+             // 
+          result.data.list.push(parseDateModel(data.dataList[i]));
+         }
+
+        return result;
+      }
+      return data;
+      
+    }
+  });
+
+  var reportView = new $.ReportView({
+    model:reqModel,
+    el:"#reports"
+  })
+
+  reportView.init();
+
+  require(["sms/RevenueView"],function(view){
+    view.init({
+      el:"#smsSearchForm",
+      args:args
+    });
+
+    view.report.on("argsSet",function(data){
+      reportView.setArgs(data);
+    })
+  })
+
+  function initSelectPanel(user){
+    require(["sms/suggestView"],function(view){
+      var searchArgs = {
+        viewType:"table",
+        yearMonth:args.yearMonth
+      }
+      var suggestArea,suggestStore;
+
+      var searchStoreArgs = {};
+      $.extend(searchStoreArgs,searchArgs);
+      function initDaquSearch(){
+        suggestArea = view({
+          // 请求查询接口
+          url:config.api.daquSearch,
+          // 附加参数
+          args:searchArgs,
+          // dom
+          el:"#areaName",
+          parse:function(data){
+            var json = {
+              list:[]
+            }
+            if(data.code == "1"){
+              json.list.push({
+                name:"全部大区",
+                value:""
+              })
+              var list = data.dataList;
+              if(list && list.length ){
+                for(var i = 0 ,len = list.length; i < len;i++){
+                  var str = list[i].split(",");
+
+                  json.list.push({
+                    name:str[0],
+                    value:str[1]
+                  })
+                }
+              }
+              return json.list;
+            }
+           return [];
+          }
+        })
+        suggestArea.on("selectValue",function(data){
+          if(data){
+            var json = data.toJSON();
+            searchStoreArgs.areaCode = json.value;
+          }else{
+            searchStoreArgs.areaCode = "";
+          }
+          if(suggestStore){
+            suggestStore.initSearchData(searchStoreArgs)
+          }
+        })
+        $("#year,#month").on("change",function(){
+          args.yearMonth = $("#year").val()+$("#month").val();
+          suggestArea.initSearchData(args);
+        })
+      }
+      function initAreaSearch(){
+        suggestStore = view({
+          // 请求查询接口
+          url:config.api.storeSearch,
+          // 附加参数
+          args:searchStoreArgs,
+          isStatic:true,
+          // dom
+          el:"#storeName",
+          parse:function(data){
+            var json = {
+              list:[]
+            }
+            if(data.code == "1"){
+              var list = data.dataList;
+              if(list && list.length ){
+                json.list.push({
+                  name:"全部门店",
+                  value:""
+                })
+                for(var i = 0 ,len = list.length; i < len;i++){
+                  var str = list[i].split(",");
+
+                  json.list.push({
+                    name:str[0],
+                    value:str[1]
+                  })
+                }
+              }
+              return json.list;
+            }
+            return [];
+          }
+        })
+        $("#year,#month").on("change",function(){
+          args.yearMonth = $("#year").val()+$("#month").val();
+          suggestStore.initSearchData(args);
+        })
+      }
+
+      if(user.role == "AreaManager" || user.role == "GeneralManager"){
+        $(".selectShop").show();
+        if(user.role == "GeneralManager"){
+          $("#storeName").show();
+          $("#areaName").show();
+          
+          initDaquSearch();
+          initAreaSearch();
+        }else{
+          $("#storeName").show();
+          initAreaSearch();
+        }
+      }
+    })
+  }
+  // 判断用户角色
+  if(window.$currentUser){
+    initSelectPanel(window.$currentUser);
+  }else{
+    $.listener.on("getUserInfo",function(e,user){
+     initSelectPanel(user);
+    })
+  }
+}
+
+
+
+</script>
+  </body>
+</html>

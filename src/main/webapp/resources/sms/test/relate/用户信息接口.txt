@@ -1,0 +1,11 @@
+需要返回当前登录用户的信息。
+1.首页用来显示当前用户信息
+2.当前用户名
+
+用户信息页
+对应工程中userInfoController 
+/userinfo/index
+request:
+{
+	userId:
+}

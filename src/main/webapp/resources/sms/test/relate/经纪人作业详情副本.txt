@@ -1,0 +1,15 @@
+经纪人作业详情
+
+//访问url
+brokerDetail/listbrokerdetail 查询列表
+brokerDetail/downloadexcel  下载详情
+request
+{
+	// 为给值按当前年月算
+	yearMonth:"";//年月
+	viewType:"";//对应要展示的类型 格式“table,pie”
+	curPage:
+	perPage:
+	storeid:
+	userid:
+}

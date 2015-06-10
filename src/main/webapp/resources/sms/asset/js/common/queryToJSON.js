@@ -1,0 +1,1 @@
+define("common/queryToJSON",function(){return function(n,e){if(!n)return{};for(var r=n.split("&"),o={},t=0,i=r.length;i>t;t++){var u=r[t].split("=");u[0]&&(o[u[0]]=u[1]?e?decodeURIComponent(u[1]):u[1]:"")}return o}});

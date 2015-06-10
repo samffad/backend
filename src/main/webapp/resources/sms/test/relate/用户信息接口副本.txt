@@ -1,0 +1,33 @@
+需要返回当前登录用户的信息。
+1.首页用来显示当前用户信息
+2.当前用户名
+
+
+request:
+{
+	
+}
+response:
+{
+	code:1,
+	data:{
+		// 所属区域
+		area:"朝北大区",
+		// 职位级别
+		levelName: "总监",
+		// 用户名
+		userName: "董亚杰",
+		// 用户图片
+		userPic: "http://image.homelink.com.cn//uploadfile/fang/agent/2013/10/21/small_5264f142ae7b5.jpg",
+		// 经纪人个数
+		jingjirenNum:22,
+		// 门店个数
+		shopNum:"12",
+		// 本月业绩
+		curValue:"2222",
+		// 当前利润
+		curProfit:"22222",
+		// 
+		ownValue:"2222"
+	}
+}

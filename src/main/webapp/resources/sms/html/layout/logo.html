@@ -1,0 +1,26 @@
+<header class="header">
+  <div class="logo">
+    <p class="sms">SMS<span class="sys-name">链家店面管理系统</span></p>
+    <p class="sms-all">Store Management System</p>
+  </div>
+   <span class="sms-current-user" id="showUserName"></span>
+   <script type="text/template" style="display:none" id="showUserNameTemplate">
+    <%if(code ==1){%>
+      你好，<%=data.userName%><a href="#">退出</a>
+    <%}else{%>
+      接口错误，请刷新重试
+    <%}%>
+   </script>
+</header>
+
+<div class="navbar">
+  <div class="navbar-inner">
+    <ul class="nav">
+      <li class="pageIndex"><a href="./smsIndex.html">首页</a></li>
+      <li class="pageYyStatus"><a href="./mendianStatus.html">营业状况</a></li>
+      <li class="pagePersonMan"><a href="./manager.html">师徒关系</a></li>
+      <li class="importPage"><a href="./import.html">录入成本</a></li>
+      <li class="pageShops"><a href="#">店面通</a></li>
+    </ul>
+  </div>
+</div>

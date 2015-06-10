@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>链家网-店面管理系统</title>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="../asset/css/common.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="../dep/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+<!--[if lt IE 9]>
+ <script type="text/javascript" src="../dep/support/html5.js"></script>
+ <script src="../dep/support/respond.min.js"></script>
+<![endif]-->
+<script type="text/javascript" src="../dep/dep.js"></script>
+<script src="../asset/js/common/common.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="../asset/css/index.css">
+  </head>
+  <body>
+
+<div class="max-wrapper">
+  <header class="header">
+  <div class="logo">
+    <p class="sms">SMS<span class="sys-name">链家店面管理系统</span></p>
+    <p class="sms-all">Store Management System</p>
+  </div>
+   <span class="sms-current-user" id="showUserName"></span>
+   <script type="text/template" style="display:none" id="showUserNameTemplate">
+    <%if(code ==1){%>
+      你好，<%=data.userName%>
+      <%if(data.role == "MultiStoreMentorRelationManager"){%>
+        <a href="<%=config.changeStore%>">切换店面</a>
+      <%}%>
+      <a href="<%=config.logoutUrl%>">退出</a>
+    <%}else{%>
+      接口错误，请刷新重试
+    <%}%>
+   </script>
+</header>
+
+<div class="navbar" id="userMenu">
+</div>
+<script type="text/template" id="userMenuTemplate">
+<div class="navbar-inner">
+<ul class="nav">
+  <%var version='1.32'%>
+  <%for(var i = 0 ,len = permissions.length;i < len;i++){%>
+    <%// MainArea 区首页 ,MainGM 副总首页%>
+    <%if(permissions[i] == "MainStore" || permissions[i] == "MainStore" || permissions[i] == "MainGM"){%>
+      <li class="pageIndex"><a href="./index.html?random=">首页</a></li>
+    <%}else if(permissions[i] == "BusinessManagerStore"){%>
+        <li class="pageYyStatus"><a href="./mendianStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "MentorRelationManager"){%>
+      <li class="pagePersonMan"><a href="./manager.html?random=<%=version%>">师徒关系</a></li>
+    <%}else if(permissions[i] == "AccountantManager"){%>
+      <li class="importPage"><a href="./import.html?random=<%=version%>">录入成本</a></li>
+    <%}else if(permissions[i] == "BusinessManagerArea"){%>
+        <%// 区营业状况管理%>
+         <li class="pageYyStatus"><a href="./daquStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "BusinessManagerGM"){%>
+        <%// 副总营业状况管理%>
+        <li class="pageYyStatus"><a href="./daquStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}%>
+  <%}%>
+  <li class="pageShops"><a href="http://172.16.4.120/homeStore/login.jsp" target="_blank">店面通</a></li>
+</ul>
+ </div>
+</script>  
+  <ul class="nav nav-tabs" id="reportMenu">
+
+</ul>
+<script type="text/template" id="reportMenuTemplate">
+<%for(var i = 0 ,len = menu.length; i < len;i++){%>
+	<li class="<%=menu[i].type%>"><a href="<%=menu[i].url%>"><%=menu[i].title%></a></li>
+<%}%>
+</script>
+<script>
+var version = '1.32';
+(function(){
+	function initReportMenu(){
+		var user = window.$currentUser;
+
+		var subUrl = [];
+		
+		var query = {};//$.queryToJson($.parseURL(location.href).query);
+		query.version = version;
+
+		// 副总经理 区经理都会有大区
+		if(user.role == "GeneralManager" || user.role == "AreaManager"){
+			subUrl.push({
+				url:$.joinURL("./daquStatus.html",query),
+				title:"大区营业状况",
+				type:"daquPanel"
+			})
+		}
+
+		subUrl.push({
+			url:$.joinURL("./mendianStatus.html",query),
+			title:"门店营业状况",
+			type:"shopPanel"
+		})
+		subUrl.push({
+			url:$.joinURL("./personstatus.html",query),
+			title:"经纪人作业详情",
+			type:"personPanel"
+		})
+		var tpl = _.template($("#reportMenuTemplate").html());
+		$("#reportMenu").html(tpl({
+			menu:subUrl
+		}));
+	}
+	
+
+	if(window.$currentUser){
+		initReportMenu();
+	}else{
+		$.listener.on("getUserInfo",function(){
+			initReportMenu();
+		});
+	}
+})();
+</script> 
+  <form id="smsSearchForm" class="form-inline sms-search" onsubmit="return false;">
+    选择时间
+    <select class="input-small year" id="year"></select>
+    <select class="input-mini month" id="month"></select>
+    <input type="hidden" name="yearMonth" id="yearMonth" value="">
+
+    <a href="javascript:;" class="actCurrentMonth">本月</a>
+
+    <button type="button" class="btn actSearch">查看</button>
+    <button type="button" class="btn actExport">导出</button>
+  </form>
+
+  <div id="reports">
+      <div class="loading">loading...</div>
+  </div>
+<iframe id="downloadIframe" name="downloadIframe" style="width:0px;height:0px;border:0px;display:none;"></iframe>
+
+<script type="text/template" id="reportsTemplate">
+  <%if(typeof total != 'undefined'){%>
+  <p>
+    <%=$.formatDate(new Date(parseInt(endTime)),"yyyy年M月")%>，<%=areaName%>
+    <%for(var i = 0 ; i < total.length;i++){%>
+      <%=total[i].name%>为<span class="green"><%=total[i].value%></span>
+    <%}%>。
+  </p>
+  <%}%>
+  <%if(typeof list != 'undefined' && list.length >0){%>
+  <%for(var i = 0 ,len = list.length; i < len;i++){%>
+    <div class="comp" compType="<%=list[i].type%>" id="comp<%=i+1%>">
+      <p class="title">
+        <%=list[i].name%>
+      </p>
+      <div class="comp-content" >
+        <!--表格-->
+        <%if(list[i].type == "table"){%>
+          <table class="table table-bordered table-hover ">
+            <thead>
+            <%=$.parseTH(list[i].label)%>
+            </thead>
+            <tbody>
+
+            <%for(var j = 0 ; j < list[i].dataList.length;j++){%>
+              <tr>
+              <%for(var k = 0 ; k < list[i].dataList[j].length;k++){%>
+                <td class="text-center"><%=list[i].dataList[j][k]%></td>
+              <%}%>
+              </tr>
+            <%}%>
+            </tbody>
+          </table>
+        <%}else if(list[i].type == "bar"){%>
+            <div class="chart chart-dom"></div>
+        <%}if(list[i].type == "pie"){%>
+            <div class="chart chart-dom"></div>
+        <%}%>
+      </div>
+    </div>
+  <%}%>
+  <%}else{%>
+    接口请求数据为空
+  <%}%>
+</script>
+  <div class="pre" style="margin-bottom:60px;">
+    <h4>温馨提示：</h4>
+    <h5>整体情况</h5>
+    <p>1、当前负债：当选择日期为本月的时候显示此项，数据截至到上月末，用来标识该店是否有历史负债。如有，数字为亏损金额。</p>
+    
+    <h5>运营人工成本</h5>
+    <p>1、底薪：平台对低级别新入职员工支付的基本薪资；</p>
+    <p>2、保障薪资预计坏账：对于L1以上级别的员工，为保证正常生活所需，公司提供了无息借款形式的保障薪资。考虑资金收回的风险，按照业绩的1%计提；</p>
+    <p>3、提佣：该商圈所有经纪人的提佣金额；</p>
+    <p>4、保险及公积金：按照规定平台需承担的运营员工的社保费用；</p>
+    <p>5、人才培养：师徒关系中师傅的收入，按照当月实际发生金额，成本计入徒弟所属门店；</p>
+    <p>6、工会&外包&残保&互助金：对员工各类关怀性支出；</p>
+    <p>7、商圈经理保障薪资：如果商圈经理当月分成不足8000，当月应发工资按照8000计算，差额次月计入门店成本。</p>
+
+    <h5>助理人工成本</h5>
+    <p>1、助理人工成本指的是该商圈门店助理的相关费用。</p>
+
+    <h5>店面成本</h5>
+    <p>1、租金：房租按照与业主签订的租赁合同期限和金额，平均摊销到各月（违约金根据当月发生额计入当月门店成本）；</p>
+    <p>2、装修及物品配置：主体装修按照门店装修总金额分成36个月，摊销计入每月门店成本。内饰按照门店当月实际发生金额计入当月门店成本。单个金额大于2000元的办公设备，且能够使用一年以上的物品，按照36个月摊销计入每月门店成本；其他物品根据门店实际发生金额计入当月门店成本；</p>
+    <p>3、办公费：包含办公杂费、店面证照费用、好处费等日常杂费；</p>
+    <p>4、物业/保洁/供暖/维修：按照实际发生费用。</p>
+
+    <h5>交易成本</h5>
+    <p>1、POS手续费：用于支付由于交易产生的POS刷卡、银行转账、支付宝等收付款手续费，计算方式为当月全部手续费总金额*（当月本店总业绩/当月公司总业绩）；</p>
+    <p>2、独家赔偿金：用于支付独家业务违约产生的赔偿金。</p>
+
+    <h5>门店风险基金</h5>
+    <p>1、门店风险基金，按照业绩1%计提，如发生纠纷单用此费用赔偿，不足以支付的时候公司承担多余部分。</p>
+  </div>
+</div>
+<script type="text/javascript">
+var pageConfig = {
+  page:"pageYyStatus,daquPanel"
+};
+
+</script>
+<footer class="footer">
+	<p>北京链家房地产经纪有限公司</p>
+	<p>Copyright©2014 All rights Reserved</p>
+</footer>
+
+<script type="text/javascript">
+
+require.config({
+	baseUrl: "../asset/js",
+	paths: {
+		'echarts' : '../../dep/echarts/echarts-all',
+		'echarts/chart/bar' : '../../dep/echarts/echarts-all',
+		'echarts/chart/line' : '../../dep/echarts/echarts-all',
+		'echarts/chart/pie' : '../../dep/echarts/echarts-all',
+		'zrender':'../../dep/echarts/echarts-all',
+		'common': 'common/common'
+	},
+	urlArgs:  'v=?1.32'
+});
+// 基础服务
+require(["sms/smscommon"],function(common){
+	
+})
+</script> 
+<script type="text/javascript">
+
+var getCurParam = (function(){
+  var url = $.parseURL(location.href);
+  return $.queryToJson(url.query);
+})();
+
+
+$.listener.on("commmReady",function(){
+  var config = $.config;
+  var searchData = getCurParam.time;
+  var searchTime = searchData;
+  // 导出
+  $(".actExport").attr("url",config.api.daquReportDataDown)
+
+  var args = {
+    viewType:"table,pie,bar"
+  };
+  var initArgs = {};
+  if(searchData){
+    searchData = searchData.split("-");
+    args.yearMonth = parseInt(searchData[0])+""+parseInt(searchData[1]);
+    initArgs.year = searchData[0];
+    initArgs.month = searchData[1];
+  }else{
+    var yearMonth = $.formatDate(new Date(),"yyyyMM")
+    args.yearMonth = yearMonth;
+  }
+
+  (function(){
+    if(!searchData){
+      return;
+    }
+    var as = $(".nav-tabs a");
+    as.each(function(){
+      var a = $(this);
+      a.attr("href",a.attr("href")+"&time="+searchTime)
+    })
+  })();
+
+  function parseDateModel(obj){
+    var label = JSON.parse(obj.label.replace(/\'/g,"\""));
+    obj.label = label;
+
+    for(var i = 0 ; i < obj.dataList.length;i++){
+      obj.dataList[i] = obj.dataList[i][0].split(",");
+    }
+    
+    if(obj.type == "bar"){
+      var total = parseFloat(obj.total[0]);
+      if(total){
+        // for(var i = 0 ; i < obj.dataList.length;i++){
+        //   for(var j = 0 ; j < obj.dataList[i].length;j++){
+        //     obj.dataList[i][j] = Math.floor(obj.dataList[i][j]/total * 100);
+        //   }
+        // }
+      }
+      obj.total = total;
+      obj.name = "占总业绩比"
+      obj.showPercent = true;
+    }
+    // console.log(obj);
+    return obj;
+  }
+
+  var reqModel = new $.BaseModel(false,{
+    url:config.api.daquReportData,
+    args:args,
+    parse:function(data){
+
+      if(data.code == 1){
+         var result = {
+           code:data.code
+         }
+         var realData = data.dataList[0];
+         result.data = {
+          total:[],
+          list:[]
+         }
+         // total
+         var total = realData.total;
+         for(var i = 0 ,len = total.length; i <len;i++ ){
+            result.data.total.push(JSON.parse(total[i].replace(/\'/g,"\"")))
+         }
+         result.data.areaName = realData.areaName;
+         result.data.endTime = realData.endTime;
+
+         for(var i = 0 ,len = realData.list.length; i < len;i++){
+             // 
+          try{
+            result.data.list.push(parseDateModel(realData.list[i]));
+          }catch(e){
+            console && console.error(e)
+          }
+          
+         }
+        return result;
+      }else{
+        return data;
+      }
+    }
+  });
+
+  var reportView = new $.ReportView({
+    model:reqModel,
+    el:"#reports"
+  })
+
+  reportView.init();
+
+  require(["sms/RevenueView"],function(view){
+    view.init({
+      el:"#smsSearchForm",
+      args:initArgs
+    });
+
+    view.report.on("argsSet",function(data){
+      reportView.setArgs(data);
+    })
+  })
+});
+
+
+</script>
+  </body>
+</html>

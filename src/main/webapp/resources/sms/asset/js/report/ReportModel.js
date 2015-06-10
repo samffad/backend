@@ -1,0 +1,1 @@
+define("report/ReportModel",function(){var e=$.BaseModel;return e});

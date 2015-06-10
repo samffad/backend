@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>链家网-店面管理系统</title>
+<meta charset="utf-8">
+<link href="../asset/img/favicon.ico" type="image/x-icon" rel=icon><link href="../asset/img/favicon.ico" type="image/x-icon" rel="shortcut icon">
+<link rel="stylesheet" type="text/css" href="../asset/css/common.css?v=1.72"">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap -->
+<link href="../dep/bootstrap/css/bootstrap.min.css?v=1.72"" rel="stylesheet" media="screen">
+
+<!--[if lt IE 9]>
+ <script type="text/javascript" src="../dep/support/html5.js?v=1.72""></script>
+ <script src="../dep/support/respond.min.js?v=1.72""></script>
+<![endif]-->
+<script type="text/javascript" src="../dep/dep.js?v=1.72"></script>
+<script src="../asset/js/common/common.js?v=1.72""></script>
+  
+  <link rel="stylesheet" type="text/css" href="../asset/css/index.css?v=1.72"">
+  </head>
+  <body>
+
+<div class="max-wrapper">
+  <header class="header">
+  <div class="logo">
+    <p class="sms">SMS<span class="sys-name">链家店面管理系统</span></p>
+    <p class="sms-all">Store Management System</p>
+  </div>
+   <span class="sms-current-user" id="showUserName"></span>
+   <script type="text/template" style="display:none" id="showUserNameTemplate">
+    <%if(code ==1){%>
+      你好，<%=data.userName%>
+      <%if(!data.enterSystemDirectly){%>
+        <a href="<%=config.changeStore%>">切换店面</a>
+      <%}%>
+      <a href="<%=config.logoutUrl%>">退出</a>
+    <%}else{%>
+      接口错误，请刷新重试
+    <%}%>
+   </script>
+</header>
+
+<div class="navbar" id="userMenu">
+</div>
+<script type="text/template" id="userMenuTemplate">
+<div class="navbar-inner">
+<ul class="nav">
+  <%var version='1.72'%>
+  <%for(var i = 0 ,len = permissions.length;i < len;i++){%>
+    <%// MainArea 区首页 ,MainGM 副总首页%>
+    <%if(permissions[i] == "MainStore" || permissions[i] == "MainArea" || permissions[i] == "MainGM"){%>
+      <li class="pageIndex"><a href="./index.html?random=">首页</a></li>
+    <%}else if(permissions[i] == "BusinessManagerStore"){%>
+        <li class="pageYyStatus"><a href="./mendianStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "MentorRelationManager"){%>
+      <li class="pagePersonMan"><a href="./manager.html?random=<%=version%>">师徒关系</a></li>
+    <%}else if(permissions[i] == "AccountantManager"){%>
+      <li class="importPage"><a href="./import.html?random=<%=version%>">录入成本</a></li>
+    <%}else if(permissions[i] == "BusinessManagerArea"){%>
+        <%// 区营业状况管理%>
+         <li class="pageYyStatus"><a href="./areaStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "BusinessManagerGM"){%>
+        <%// 副总营业状况管理%>
+        <li class="pageYyStatus"><a href="./fuzongStatus.html?random=<%=version%>">营业状况</a></li>
+    <%}else if(permissions[i] == "DianMianTong"){%>
+        <li class="pageShops"><a href="http://172.16.4.120/homeStore/login.jsp" target="_blank">店面通</a></li>
+    <%}%>
+  <%}%>
+  
+</ul>
+ </div>
+</script>  
+
+
+  <div class="jingjinren-info clearfix" id="jingjirenInfo">
+    <div class="loading">loading...</div>
+  </div>
+  <script type="text/template" style="display:none" id="jingjirenInfoTemplate">
+    <%if(code == 1){%>
+          <div class="user-detail fuzong">
+            <img class="left" src="<%=data.userPic%>">
+            <p><%=data.area%> <%=data.levelName%></p>
+            <p><h4><%=data.userName%></h4></p>
+            <div>
+              <div class="user-value clearfix">
+                <%if(data.role == "GeneralManager" || data.role == "GeneralManagerBranch"){%>
+                <p>
+                  <i><img src="../asset/img/u34.png"></i>大区数量<%=data.areaTotal || 0%>个
+                </p>
+                <%}%>
+                <%if(data.role == "GeneralManager" || data.role == "GeneralManagerBranch" || data.role == "AreaManager"){%>
+                <p>
+                  <i><img src="../asset/img/u34.png"></i>门店数量<%=data.storeTotal || 0%>个
+                </p>
+                <%}%>
+                <p class="person">
+                  <i><img src="../asset/img/u66.png"></i>经纪人<span><%=data.jingjirenNum || 0%>人</span>
+                </p>
+                <p class="cur-value">
+                  <i><img src="../asset/img/u60.png"></i>本月当前业绩<span><%=data.curValue%></span>
+                </p>
+                <p class="cur-profit">
+                  <i><img src="../asset/img/u76.png"></i>本月当前利润<span><%=data.curProfit%></span>
+                </p>
+              </div>
+            </div>
+          </div>
+    <%}else{%>
+        接口错误，请<a href="javascript:location.reload();">刷新</a>重试
+    <%}%>
+    
+  </script>
+
+  <div id="reports">
+    <div class="loading">loading...</div>
+</div>
+
+<script type="text/template" id="reportsTemplate">
+  <%if(typeof list == "undefined"){%>
+    <p style="text-align:center;margin-top:20px;">还没有图表数据</p>
+  <%}else{%>
+  <%for(var i = 0 ,len = list.length; i < len;i++){%>
+    <div class="comp" compType="<%=list[i].type%>" id="comp<%=i+1%>">
+      <p class="title">
+        <%=list[i].name%>
+        <%if(window.$currentUser.role == "GeneralManager"){%>
+          <a class="pull-right" href="./fuzongStatus.html?time=<%=$.formatDate(new Date(parseInt(list[i].startTime)),"yyyy-MM")%>">详细数据&gt;&gt;</a>
+        <%}else if(window.$currentUser.role == "AreaManager"){%>
+          <a class="pull-right" href="./areaStatus.html?time=<%=$.formatDate(new Date(parseInt(list[i].startTime)),"yyyy-MM")%>">详细数据&gt;&gt;</a>
+        <%}else{%>
+        <a class="pull-right" href="./mendianStatus.html?time=<%=$.formatDate(new Date(parseInt(list[i].startTime)),"yyyy-MM")%>">详细数据&gt;&gt;</a>
+        <%}%>
+      </p>
+      <div class="comp-content" >
+        <!--表格-->
+        <%if(list[i].type == "table"){%>
+          <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+            <%for(var i = 0 ; i < list[i].label.length;i++){%>
+              <th><%=list[i].label[i]%></th>
+            <%}%>
+            </tr>
+          </thead>
+          <tbody>
+          <%for(var j = 1 ; j < list[i].dataList.length;j++){%>
+            <tr>
+            <%for(var i = 0 ; i < list[i].dataList[j].length;i++){%>
+              <td><%=list[i].dataList[j][i]%></td>
+            <%}%>
+            </tr>
+          <%}%>
+          </tbody>
+        </table>
+        <%}else if(list[i].type == "bar"){%>
+            <div class="chart chart-dom"></div>
+        <%}if(list[i].type == "pie"){%>
+            <%if(list[i].suffix){%>
+            <p class="tips"><%=list[i].suffix.time%>,<%=list[i].suffix.shopName%>店总业绩为<span><%=list[i].suffix.totalYeji%></span>,成本总计<span><%=list[i].suffix.total%></span>,利润为<span><%=list[i].suffix.lirun%></span></p>
+            <p class="tips">以下为成本构成图：</p>
+            <%}%>
+            <div class="chart chart-dom"></div>
+        <%}%>
+      </div>
+    </div>
+  <%}}%>
+</script> 
+
+</div>
+<script type="text/javascript">
+// 页面配置
+var pageConfig = {
+  page:"pageIndex"
+};
+</script>
+
+<footer class="footer">
+	<p>北京链家房地产经纪有限公司</p>
+	<p>Copyright©2014 All rights Reserved</p>
+</footer>
+
+<script type="text/javascript">
+
+require.config({
+	baseUrl: "../asset/js",
+	paths: {
+		'echarts' : '../../dep/echarts/echarts-all',
+		'echarts/chart/bar' : '../../dep/echarts/echarts-all',
+		'echarts/chart/line' : '../../dep/echarts/echarts-all',
+		'echarts/chart/pie' : '../../dep/echarts/echarts-all',
+		'zrender':'../../dep/echarts/echarts-all',
+		'common': 'common/common'
+	},
+	urlArgs:  'v=?1.72'
+});
+// 基础服务
+require(["sms/smscommon"],function(common){
+	
+})
+</script> 
+<script type="text/javascript">
+if(window.navReady){
+  pageInit();
+}else{
+  $.listener.on("navReady",function(){
+    pageInit();
+  });
+}
+
+
+
+function pageInit(){
+
+require(["sms/showUserInfoView"],function(view){
+  
+})
+
+var config = $.config;
+  var reqModel = new $.BaseModel({},{
+    url:config.api.indexReport
+  });
+  var reportView = new $.ReportView({
+    model:reqModel,
+    el:"#reports"
+  })
+  reportView.parse = function(data){
+    if(data.code == 1){
+      var list = data.dataList;
+      var result = [];
+      for(var i = 0 ,len = list.length;i < len;i++){
+        var label = list[i].label.replace(/\'/g,"\"");
+        list[i].label = JSON.parse(label);
+        var dataList = [];
+        for(var j = 0,len1 = list[i].dataList.length; j < len1;j++){
+          dataList.push(list[i].dataList[j][0].split(","))
+        }
+        list[i].dataList = dataList;
+        if(i ==0){
+          list[i].startTime = new Date().getTime();
+        }else if(i ==1){
+          var today = new Date();
+          today.setMonth(today.getMonth()-1);
+
+          try{
+            if(list[i].total){
+              list[i].suffix = {};
+              for(var k = 0 ; k < list[i].total.length; k++){
+                list[i].total[k] = JSON.parse(list[i].total[k].replace(/\'/g,"\""));
+                if(list[i].total[k].name == "上月时间"){
+                  list[i].suffix.time = list[i].total[k].value.substring(0,4)+"年"+list[i].total[k].value.substring(4)+"月"
+                }
+                if(list[i].total[k].name == "店名称"){
+                  list[i].suffix.shopName =list[i].total[k].value;
+                }
+                if(list[i].total[k].name == "总业绩"){
+                  list[i].suffix.totalYeji =list[i].total[k].value;
+                }
+                if(list[i].total[k].name == "成本总计"){
+                  list[i].suffix.total =list[i].total[k].value;
+                }
+                if(list[i].total[k].name == "利润"){
+                  list[i].suffix.lirun =list[i].total[k].value;
+                }
+              }
+              
+              //list[i].suffix.
+            }
+          }catch(e){
+          }
+          
+          list[i].startTime = today.getTime();
+        }
+        result.push(list[i]);
+      }
+      return result;
+    }
+    
+    return data;
+  }
+  
+  reportView.init();
+}
+
+</script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+define("common/parseURL",function(){return function(e){for(var r=/^(?:([A-Za-z]+):(\/{0,3}))?([0-9.\-A-Za-z]+\.[0-9A-Za-z]+)?(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,n=["url","scheme","slash","host","port","path","query","hash"],a=r.exec(e),t={},h=0,o=n.length;o>h;h+=1)t[n[h]]=a[h]||"";return t}});

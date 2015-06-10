@@ -1,0 +1,1 @@
+define("sms/selectSuggest",function(){});

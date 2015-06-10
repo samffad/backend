@@ -1,0 +1,41 @@
+<div id="reports">
+    <div class="loading">loading...</div>
+</div>
+
+<script type="text/template" id="reportsTemplate">
+  <%for(var i = 0 ,len = list.length; i < len;i++){%>
+    <div class="comp" compType="<%=list[i].type%>" id="comp<%=i+1%>">
+      <p class="title">
+        <%=list[i].name%>
+        <a class="pull-right" href="./mendianStatus.html?time=<%=$.formatDate(new Date(parseInt(list[i].startTime)),"yyyy-M")%>">详细数据&gt;&gt;</a>
+      </p>
+      <div class="comp-content" >
+        <!--表格-->
+        <%if(list[i].type == "table"){%>
+          <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+            <%for(var i = 0 ; i < list[i].label.length;i++){%>
+              <th><%=list[i].label[i]%></th>
+            <%}%>
+            </tr>
+          </thead>
+          <tbody>
+          <%for(var j = 1 ; j < list[i].dataList.length;j++){%>
+            <tr>
+            <%for(var i = 0 ; i < list[i].dataList[j].length;i++){%>
+              <td><%=list[i].dataList[j][i]%></td>
+            <%}%>
+            </tr>
+          <%}%>
+          </tbody>
+        </table>
+        <%}else if(list[i].type == "bar"){%>
+            <div class="chart chart-dom"></div>
+        <%}if(list[i].type == "pie"){%>
+            <div class="chart chart-dom"></div>
+        <%}%>
+      </div>
+    </div>
+  <%}%>
+</script>

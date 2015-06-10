@@ -1,0 +1,12 @@
+首页用户报表
+
+// 首页数据
+/userinfo/indexdata
+request
+{
+	storeid:
+	userid:
+	yearMonth:"";//年月
+	viewType:"";//对应要展示的类型 格式“table,pie”
+}
+

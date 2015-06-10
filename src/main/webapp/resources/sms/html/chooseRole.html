@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>链家网-店面管理系统</title>
+<link href="../dep/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<script type="text/javascript" src="../dep/jquery/jquery.min.js"></script>
+<style type="text/css">
+.form{
+	width:500px;
+	margin:0 auto;
+	padding:30px 0;
+}
+</style>
+</head>
+<body>
+<p class="text-center"> 对不起，您没有权限登录。
+	<a href="${logoutUrl}">重新登录</a>,
+	<a href="http://se.homelink.com.cn"> 登录SE</a>
+<p>
+<form action="login" method="post" class="form-horizontal form">
+			<fieldset>
+				<legend>请选择登录角色</legend>
+<p>
+		<label class="radio inline"><input type="radio" name="roleIdSelected" value="0" checked="checked" >管理员</label>
+		<label class="radio inline"><input type="radio" name="roleIdSelected" value="21"  >财务</label>
+		<label class="radio inline"><input type="radio" name="roleIdSelected" value="31"  >自定义多店师徒关系管理者</label>
+</p>
+<p name="orgDivName" id="orgDivId_0"  >
+	<label>输入店ID: <input type="text" name="orgIdInput" class="input-medium"></label>
+</p>
+<div name="orgDivName" id="orgDivId_21" style="display: none;" >
+</div>
+<div name="orgDivName" id="orgDivId_31" style="display: none;" >
+<p>请选择店：</p>
+<label class="radio">
+	<input type="radio" name="orgIdSelected" value="388"> /链家集团/北京链家/运营/京南区/京南运营/朝东区/柏林爱乐南门店</label>
+<label class="radio">
+<input type="radio" name="orgIdSelected" value="1470"> /链家集团/北京链家/运营/京北区/京北运营/望京大区/新澳洲康都店
+</label>
+</div>
+<p class="text-center"><input type="submit" class="btn" id="submitBtn" value="提交"></p>
+</fieldset>
+</form>
+<script type="text/javascript">
+$(function(){
+	$("input[name='roleIdSelected']").bind('click',function(e){
+     	var id = $(this).val();
+     	var divShowId = "orgDivId_"+id;
+     	$("div[name='orgDivName']").hide();
+     	$("#"+divShowId).show();
+    });
+});
+</script>
+</body>
+</html>
