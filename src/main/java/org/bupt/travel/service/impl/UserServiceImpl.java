@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService{
 		User oneUser = userList.get(0);
 		if(oneUser.getPassword().equals(pwd)) {
 			List<String> pwds = new ArrayList<String>() ;
-			pwds.add(oneUser.getId());
+			pwds.add(String.valueOf(oneUser.getId()));
 			msg.setDataList(pwds);
 			return msg;
 		}
