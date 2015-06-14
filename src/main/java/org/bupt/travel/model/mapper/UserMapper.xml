@@ -84,6 +84,13 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	        WHERE 
 	                id = #{id} 
 	</update>
+	
+	<update id="update_avatar" >
+	        UPDATE  user
+	    	SET photo_path = #{photoPath}
+	        WHERE 
+	                id = #{id} 
+	</update>
 
     <delete id="delete">
     <![CDATA[

@@ -30,6 +30,12 @@ public class UserDaoImpl extends MyBatisBaseDaoImpl<User,java.lang.Integer> impl
 		return sqlSessionTemplate.selectList(User.class.getName() + ".getuserinfo", parasMap);
 	}
 	
+	@Override
+	public List<User> getUserInfoByuID(int id) {
+		Map<String, ? extends Object> parasMap = ImmutableMap.of("id", id);
+		return sqlSessionTemplate.selectList(User.class.getName() + ".getById", parasMap);
+	}
+	
 	/*
 	 * #{id} ,
         	#{name} ,
@@ -47,6 +53,16 @@ public class UserDaoImpl extends MyBatisBaseDaoImpl<User,java.lang.Integer> impl
 			throw e;
 		}
 		
+	}
+	
+	@Override
+	public void addUserPhoto(int id, String photoname) {
+		try {
+			Map<String, ? extends Object> paras = ImmutableMap.of("id", id, "photoPath", photoname);
+			sqlSessionTemplate.update(User.class.getName().concat(".update_avatar"), paras);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 }

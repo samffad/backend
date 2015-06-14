@@ -66,6 +66,35 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
+	public BizMsg<UserVo> getuserInfo(String userId) {
+		BizMsg<UserVo> msg = new BizMsg<UserVo>();
+		msg.setCode(Const.STATUS_OK);
+		
+		if(FunctionUtility.checkString(userId) == false)
+		{
+			msg.setCode(Const.STATUS_BIZ_ERROR);
+			msg.setMsg("请输入正确的用户名");
+			return msg;
+		}
+	
+		
+		List<User> userList = userDao.getUserInfoByuID(Integer.valueOf(userId));
+		if(userList == null || userList.size() == 0) {
+			msg.setCode(Const.STATUS_BIZ_ERROR);
+			msg.setMsg("用户名不存在");
+			return msg;
+		}
+		
+		User oneUser = userList.get(0);
+		UserVo vo = new UserVo(oneUser.getId(), oneUser.getName(), oneUser.getNickname(), oneUser.getGender(), Const.avatarPath.concat(oneUser.getPhotoPath()));
+		List<UserVo> list = new ArrayList<UserVo>();
+		list.add(vo);
+		msg.setDataList(list);
+		return msg;
+	
+	}
+	
+	@Override
 	public BizMsg<UserVo> register(String username, String pwd, String nickname, String gender) {
 		BizMsg<UserVo> msg = new BizMsg<UserVo>();
 		msg.setCode(Const.STATUS_OK);
@@ -109,6 +138,23 @@ public class UserServiceImpl implements UserService{
 		else {
 			msg.setCode(Const.STATUS_BIZ_ERROR);
 			msg.setMsg("用户已存在");
+			return msg;
+		}
+	}
+	
+	@Override
+	public BizMsg<String> updateUserAvatarInfo(String uid, String filename) {
+		BizMsg<String> msg = new BizMsg<String>();
+		msg.setCode(Const.STATUS_OK);
+		try {
+			int id = Integer.valueOf(uid);
+			
+			userDao.addUserPhoto(id, filename);
+			
+			return msg;
+		} catch (Exception e) {
+			msg.setCode(Const.STATUS_BIZ_ERROR);
+			msg.setMsg("头像更新失败");
 			return msg;
 		}
 	}

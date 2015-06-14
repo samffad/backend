@@ -23,4 +23,10 @@ public interface UserDao extends MyBatisBaseDao<User, java.lang.Integer> {
 
 
 	void insertUser(String name, String nickname, String gender, String passwd,
-			String path);}
+			String path);
+
+	void addUserPhoto(int id, String photoname);
+
+
+
+	List<User> getUserInfoByuID(int id);}

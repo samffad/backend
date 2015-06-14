@@ -6,4 +6,6 @@ public class Const {
 	public static final String STATUS_OK = "1";
 	public static final String STATUS_BIZ_ERROR = "2";
 	
+	public static final String avatarPath = "/usr/local/repo/avatar/";
+	
 }
