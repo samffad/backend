@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService{
 	private UserDao userDao;
 	 
 	@Override
-	public BizMsg<String> login(String username, String pwd) {
-		BizMsg<String> msg = new BizMsg<String>();
+	public BizMsg<UserVo> login(String username, String pwd) {
+		BizMsg<UserVo> msg = new BizMsg<UserVo>();
 		msg.setCode(Const.STATUS_OK);
 		
 		if(FunctionUtility.checkString(username) == false)
@@ -52,9 +52,10 @@ public class UserServiceImpl implements UserService{
 		
 		User oneUser = userList.get(0);
 		if(oneUser.getPassword().equals(pwd)) {
-			List<String> pwds = new ArrayList<String>() ;
-			pwds.add(String.valueOf(oneUser.getId()));
-			msg.setDataList(pwds);
+			UserVo vo = new UserVo(oneUser.getId(), oneUser.getName(), oneUser.getNickname(), oneUser.getGender(), Const.avatarPath.concat(oneUser.getPhotoPath()));
+			List<UserVo> list = new ArrayList<UserVo>();
+			list.add(vo);
+			msg.setDataList(list);
 			return msg;
 		}
 		else {

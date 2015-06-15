@@ -1,8 +1,16 @@
 package org.bupt.travel.vo;
 
-public class UserVo {
+import java.io.Serializable;
 
-	private java.lang.Integer id;
+public class UserVo implements Serializable {
+	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8614756057286821686L;
+
+	private java.lang.Integer uid;
 
 	private java.lang.String name;
 
@@ -15,20 +23,14 @@ public class UserVo {
 	public UserVo(Integer id, String name, String nickname, String gender,
 			String photoPath) {
 		super();
-		this.id = id;
+		this.uid = id;
 		this.name = name;
 		this.nickname = nickname;
 		this.gender = gender;
 		this.photoPath = photoPath;
 	}
 
-	public java.lang.Integer getId() {
-		return id;
-	}
-
-	public void setId(java.lang.Integer id) {
-		this.id = id;
-	}
+	
 
 	public java.lang.String getName() {
 		return name;

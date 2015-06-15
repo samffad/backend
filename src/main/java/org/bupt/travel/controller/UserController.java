@@ -52,7 +52,7 @@ public class UserController {
 		String UName = request.getParameter("UName");
 		String pwd = request.getParameter("pwd");
 		
-		BizMsg<String> msg = new BizMsg<String>();
+		BizMsg<UserVo> msg = new BizMsg<UserVo>();
 		try {
 			msg = userService.login(UName, pwd);
 		} catch (Exception e) {
