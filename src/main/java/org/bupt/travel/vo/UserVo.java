@@ -32,6 +32,18 @@ public class UserVo implements Serializable {
 
 	
 
+	public java.lang.Integer getUid() {
+		return uid;
+	}
+
+
+
+	public void setUid(java.lang.Integer uid) {
+		this.uid = uid;
+	}
+
+
+
 	public java.lang.String getName() {
 		return name;
 	}
