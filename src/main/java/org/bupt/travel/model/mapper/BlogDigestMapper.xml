@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="org.bupt.travel.model.BlogDigest">
+
+	<resultMap id="RM_BlogDigest" type="org.bupt.travel.model.BlogDigest">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="visitTime" column="visit_time"/>
+        <result property="location" column="location"/>
+        <result property="duration" column="duration"/>
+        <result property="authorId" column="author_id"/>
+        <result property="authorName" column="author_name"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,title,visit_time,location,duration,author_id,author_name,description,create_time,status
+	    ]]>
+	</sql>
+	
+	<select id="queryByBlogId" parameterType="int" resultMap="blogDetailRs">
+        select
+        blog_digest.id blogid, blog_digest.title,  blog_digest.visit_time b_visit_time, blog_digest.location b_loc, duration,
+        author_id, author_name, blog_digest.description b_desc, blog_digest.create_time b_create_time,
+        blog_footprint.id fp_id, seq_id, blog_footprint.desc fp_desc, blog_footprint.location_name fp_location_name,
+        lon, lat, blog_footprint.visit_time fp_visit_time, blog_footprint.create_time fp_create_time
+        from blog_digest INNER JOIN blog_footprint
+        ON blog_digest.id = blog_footprint.blog_ref_id
+        where blog_digest.id = #{blog_id} AND blog_digest.status = 0 AND blog_footprint.status = 0
+    </select>
+    
+	
+	<resultMap type="org.bupt.travel.model.BlogDigest" id="blogDetailRs">
+        <id column="blogid" property="id" />
+        <result column="title" property="title" />
+        <result column="b_visit_time" property="visitTime" />
+        <result column="b_loc" property="location" />
+        <result column="duration" property="duration" />
+        <result column="author_id" property="authorId" />
+        <result column="author_name" property="authorName" />
+        <result column="b_desc" property="description" />
+        <result column="b_create_time" property="createTime" />
+        <association property="bFootprint" javaType="org.bupt.travel.model.BlogFootprint" resultMap="bfpRs" />
+    </resultMap>
+    <resultMap type="org.bupt.travel.model.BlogFootprint" id="bfpRs">
+        <id column="fp_id" property="id" />
+        <result column="seq_id" property="seqId" />
+        <result column="fp_desc" property="desc" />
+        <result column="seq_id" property="seqId" />
+        <result column="fp_location_name" property="locationName" />
+        <result column="lon" property="lon" />
+        <result column="lat" property="seqId" />
+        <result column="fp_visit_time" property="visitTime" />
+        <result column="fp_create_time" property="createTime" />
+        <result column="seq_id" property="seqId" />
+    </resultMap>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO blog_digest (
+        	id ,
+        	title ,
+        	visit_time ,
+        	location ,
+        	duration ,
+        	author_id ,
+        	author_name ,
+        	description ,
+        	create_time ,
+        	status 
+        ) VALUES (
+        	#{id} ,
+        	#{title} ,
+        	#{visitTime} ,
+        	#{location} ,
+        	#{duration} ,
+        	#{authorId} ,
+        	#{authorName} ,
+        	#{description} ,
+        	#{createTime} ,
+        	#{status} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+	
+	
+     <sql id="update_sql">
+         <set>
+                <if test="title != null and title != ''">
+	         	title = #{title} ,
+	         </if>
+                <if test="visitTime != null">
+	         	visit_time = #{visitTime} ,
+	       </if>
+                <if test="location != null and location != ''">
+	         	location = #{location} ,
+	         </if>
+                <if test="duration != null">
+	         	duration = #{duration} ,
+	         </if>
+                <if test="authorId != null">
+	         	author_id = #{authorId} ,
+	         </if>
+                <if test="authorName != null and authorName != ''">
+	         	author_name = #{authorName} ,
+	         </if>
+                <if test="description != null and description != ''">
+	         	description = #{description} ,
+	         </if>
+                <if test="createTime != null">
+	         	create_time = #{createTime} ,
+	       </if>
+                <if test="status != null">
+	         	status = #{status} 
+	         </if>
+       </set>
+    </sql>
+    
+	<update id="update" >
+	        UPDATE  blog_digest
+	    <include refid="update_sql" />
+	        WHERE 
+	                id = #{id} 
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM blog_digest WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <delete id="delete_batch_string" parameterType="map">
+    <![CDATA[
+        DELETE FROM blog_digest WHERE id IN (${ids})
+    ]]>
+    </delete>
+    
+    <delete id="delete_batch_array">
+        DELETE FROM blog_digest WHERE id IN 
+        <foreach item="item" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    </delete>
+    
+    <delete id="delete_batch_list">
+        DELETE FROM blog_digest WHERE id IN 
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    </delete>
+    
+    <select id="getById" resultMap="RM_BlogDigest">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM blog_digest 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+	<sql id="findPage_where">
+		<!-- ognl访问静态方法的表达式 为@class@method(args),以下为调用rapid中的Ognl.isNotEmpty()方法,还有其它方法如isNotBlank()可以使用，具体请查看Ognl类 -->
+		<where>	      				
+               <if test="id != null">
+		             AND id = #{id}
+	           </if>
+                <if test="title != null and title !=''">
+		          <choose>  
+				   <when test="selectType['title']==1">  
+				      AND title like CONCAT('%', #{title}, '%')
+				   </when>  
+					<otherwise>  
+					      AND title = #{title}
+					   </otherwise>  
+					</choose>
+	            </if>
+		       <if test="visitTimeBegin != null">
+					AND visit_time >= #{visitTimeBegin}
+			   </if>
+			   <if test="visitTimeEnd != null">
+					AND visit_time &lt;= #{visitTimeEnd}
+			   </if>
+                <if test="location != null and location !=''">
+		          <choose>  
+				   <when test="selectType['location']==1">  
+				      AND location like CONCAT('%', #{location}, '%')
+				   </when>  
+					<otherwise>  
+					      AND location = #{location}
+					   </otherwise>  
+					</choose>
+	            </if>
+               <if test="duration != null">
+		             AND duration = #{duration}
+	           </if>
+               <if test="authorId != null">
+		             AND author_id = #{authorId}
+	           </if>
+                <if test="authorName != null and authorName !=''">
+		          <choose>  
+				   <when test="selectType['authorName']==1">  
+				      AND author_name like CONCAT('%', #{authorName}, '%')
+				   </when>  
+					<otherwise>  
+					      AND author_name = #{authorName}
+					   </otherwise>  
+					</choose>
+	            </if>
+                <if test="description != null and description !=''">
+		          <choose>  
+				   <when test="selectType['description']==1">  
+				      AND description like CONCAT('%', #{description}, '%')
+				   </when>  
+					<otherwise>  
+					      AND description = #{description}
+					   </otherwise>  
+					</choose>
+	            </if>
+		       <if test="createTimeBegin != null">
+					AND create_time >= #{createTimeBegin}
+			   </if>
+			   <if test="createTimeEnd != null">
+					AND create_time &lt;= #{createTimeEnd}
+			   </if>
+               <if test="status != null">
+		             AND status = #{status}
+	           </if>
+	         <if test="ids != null  and ids !=''">  
+		        AND id in (${ids})
+		   </if> 		
+		</where>
+	</sql>
+		
+    <select id="findPage_count" resultType="long">
+        SELECT count(*) FROM blog_digest 
+		<include refid="findPage_where"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findPage" resultMap="RM_BlogDigest">
+    	SELECT <include refid="columns" />
+	    FROM blog_digest 
+		<include refid="findPage_where"/>
+		
+		<if test="sortColumns != null and sortColumns !=''">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+
+	
+</mapper>
+
