@@ -4,7 +4,9 @@
 package org.bupt.travel.dao;
 import org.bupt.travel.model.*;
 import org.bupt.base.dao.ibatis.MyBatisBaseDao;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -14,4 +16,10 @@ import java.util.Date;
  * @Date	
  *
  */
-public interface PhotoinfoDao extends MyBatisBaseDao<Photoinfo, java.lang.Integer> {}
+public interface PhotoinfoDao extends MyBatisBaseDao<Photoinfo, java.lang.Integer> {
+
+	void delBlogSureface(String bid);
+
+	void delBlogFPPhoto(String fpId);
+
+	List<Photoinfo> getBlogSurfacePhoto(List<String> blogId);}

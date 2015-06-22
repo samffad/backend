@@ -25,6 +25,34 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 		id,photo_name,photo_path,photo_revise_path,create_time,status,user_id,blog_id,footprint_id,type
 	    ]]>
 	</sql>
+	
+	<delete id="deleteByFPid">
+    <![CDATA[
+        DELETE FROM photoinfo WHERE
+        footprint_id = #{footprint_id} and type = 1
+    ]]>
+    </delete>
+	
+	<delete id="deleteByFPid">
+    <![CDATA[
+        DELETE FROM photoinfo WHERE
+        footprint_id = #{footprint_id} and type = 1
+    ]]>
+    </delete>
+	
+	<delete id="deleteBybid">
+    <![CDATA[
+        DELETE FROM photoinfo WHERE
+        blog_id = #{blog_id} and type = 1
+    ]]>
+    </delete>
+	
+	<select id="select_blog_photo_batch_list">
+        SELECT FROM photoinfo WHERE type = 1 AND blog_id IN 
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    </select>
 
 	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">

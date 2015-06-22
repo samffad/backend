@@ -26,4 +26,6 @@ public interface BlogDigestDao extends MyBatisBaseDao<BlogDigest, java.lang.Inte
 	* @author ying 2015年6月20日 上午10:09:44
 	*/
 		
-	List<BlogDigest> getBlogFPDetail(int blog_id);}
+	List<BlogDigest> getBlogFPDetail(int blog_id);
+
+	List<BlogDigest> getRecentBlogList(int offset, String authorName);}

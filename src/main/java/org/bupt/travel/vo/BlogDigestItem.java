@@ -26,9 +26,12 @@ public class BlogDigestItem {
 	private String duration;
 	private String authorName;
 	private String locationName;
+	private String city;
+	private String surfaceUrl;
 	
 	public BlogDigestItem(int blogId, String title, String visitTime,
-			String duration, String authorName, String locationName) {
+			String duration, String authorName, String locationName,
+			String city, String surfaceUrl) {
 		super();
 		this.blogId = blogId;
 		this.title = title;
@@ -36,6 +39,21 @@ public class BlogDigestItem {
 		this.duration = duration;
 		this.authorName = authorName;
 		this.locationName = locationName;
+		this.city = city;
+		this.surfaceUrl = surfaceUrl;
+	}
+	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getSurfaceUrl() {
+		return surfaceUrl;
+	}
+	public void setSurfaceUrl(String surfaceUrl) {
+		this.surfaceUrl = surfaceUrl;
 	}
 	public int getBlogId() {
 		return blogId;

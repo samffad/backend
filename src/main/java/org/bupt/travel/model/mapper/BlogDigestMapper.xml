@@ -26,6 +26,16 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
 	    ]]>
 	</sql>
 	
+	<select id="getRecentAllBlogs" resultMap="RM_BlogDigest">
+		SELECT <include refid="columns" />
+		    FROM blog_digest 
+		    WHERE status = 0
+		    <if test="authorId != null">
+					AND author_id = #{authorId}
+			</if>
+	        ORDER BY create_time DESC LIMIT #{offset}, #{pageSize}
+	</select>
+	
 	<select id="queryByBlogId" parameterType="int" resultMap="blogDetailRs">
         select
         blog_digest.id blogid, blog_digest.title,  blog_digest.visit_time b_visit_time, blog_digest.location b_loc, duration,

@@ -8,4 +8,5 @@ public class Const {
 	
 	public static final String avatarPath = "/usr/local/repo/avatar/";
 	
+	public static final int pageDefaultSize = 10;
 }
