@@ -1,1 +1,0 @@
-define("common/joinURL",function(){return function(n,o){n||(n=location.href);var e=[];for(var i in o)i&&e.push(i+"="+encodeURIComponent(o[i]));return n.indexOf("?")<0&&(n+="?"),n+(n.indexOf("&")>=0?"&"+e.join("&"):e.join("&"))}});

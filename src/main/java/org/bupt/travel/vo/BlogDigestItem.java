@@ -9,6 +9,8 @@
 	
 package org.bupt.travel.vo;
 
+import java.util.Date;
+
 
 		/**
 		
@@ -22,16 +24,15 @@ package org.bupt.travel.vo;
 public class BlogDigestItem {
 	private int blogId;
 	private String title;
-	private String visitTime;
-	private String duration;
+	private Date visitTime;
+	private int duration;
 	private String authorName;
 	private String locationName;
-	private String city;
 	private String surfaceUrl;
 	
-	public BlogDigestItem(int blogId, String title, String visitTime,
-			String duration, String authorName, String locationName,
-			String city, String surfaceUrl) {
+	public BlogDigestItem(int blogId, String title, Date visitTime,
+			Integer duration, String authorName, String locationName,
+			String surfaceUrl) {
 		super();
 		this.blogId = blogId;
 		this.title = title;
@@ -39,16 +40,9 @@ public class BlogDigestItem {
 		this.duration = duration;
 		this.authorName = authorName;
 		this.locationName = locationName;
-		this.city = city;
 		this.surfaceUrl = surfaceUrl;
 	}
 	
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
 	public String getSurfaceUrl() {
 		return surfaceUrl;
 	}
@@ -67,18 +61,23 @@ public class BlogDigestItem {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getVisitTime() {
+	
+	public Date getVisitTime() {
 		return visitTime;
 	}
-	public void setVisitTime(String visitTime) {
+
+	public void setVisitTime(Date visitTime) {
 		this.visitTime = visitTime;
 	}
-	public String getDuration() {
+
+	public int getDuration() {
 		return duration;
 	}
-	public void setDuration(String duration) {
+
+	public void setDuration(int duration) {
 		this.duration = duration;
 	}
+
 	public String getAuthorName() {
 		return authorName;
 	}

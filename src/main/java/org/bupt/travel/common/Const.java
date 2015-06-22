@@ -7,6 +7,7 @@ public class Const {
 	public static final String STATUS_BIZ_ERROR = "2";
 	
 	public static final String avatarPath = "/usr/local/repo/avatar/";
+	public static final String blogPhotoPath = "/usr/local/repo/blog/photo";
 	
 	public static final int pageDefaultSize = 10;
 }

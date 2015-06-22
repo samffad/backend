@@ -33,13 +33,6 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     ]]>
     </delete>
 	
-	<delete id="deleteByFPid">
-    <![CDATA[
-        DELETE FROM photoinfo WHERE
-        footprint_id = #{footprint_id} and type = 1
-    ]]>
-    </delete>
-	
 	<delete id="deleteBybid">
     <![CDATA[
         DELETE FROM photoinfo WHERE
