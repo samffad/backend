@@ -92,8 +92,25 @@ public class BlogDigest{
 	
 	private BlogFootprint bFootprint;
 	
+	
+	
  
  
+	public BlogDigest(String title, Date visitTime, String location,
+			Integer duration, Integer authorId, String authorName,
+			String description, Date createTime, Integer status) {
+		super();
+		this.title = title;
+		this.visitTime = visitTime;
+		this.location = location;
+		this.duration = duration;
+		this.authorId = authorId;
+		this.authorName = authorName;
+		this.description = description;
+		this.createTime = createTime;
+		this.status = status;
+	}
+
 	public BlogFootprint getbFootprint() {
 		return bFootprint;
 	}

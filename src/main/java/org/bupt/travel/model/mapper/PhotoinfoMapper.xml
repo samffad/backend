@@ -40,8 +40,10 @@ PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
     ]]>
     </delete>
 	
-	<select id="select_blog_photo_batch_list">
-        SELECT FROM photoinfo WHERE type = 1 AND blog_id IN 
+	<select id="select_blog_photo_batch_list" resultMap="RM_Photoinfo">
+        SELECT  
+        <include refid="columns" />
+        FROM photoinfo WHERE type = 1 AND blog_id IN 
         <foreach item="item" collection="list" open="(" separator="," close=")">
 			#{item}
 		</foreach>

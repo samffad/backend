@@ -92,6 +92,20 @@ public class BlogFootprint{
 
  
  
+	public BlogFootprint(Integer blogRefId, String desc, String locationName,
+			Double lon, Double lat, Date visitTime, Date createTime,
+			Integer status) {
+		super();
+		this.blogRefId = blogRefId;
+		this.desc = desc;
+		this.locationName = locationName;
+		this.lon = lon;
+		this.lat = lat;
+		this.visitTime = visitTime;
+		this.createTime = createTime;
+		this.status = status;
+	}
+
 	public BlogFootprint(){
 	}
 

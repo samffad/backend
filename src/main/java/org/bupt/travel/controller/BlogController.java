@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mchange.v2.log.FallbackMLog;
+
 @Controller
 @RequestMapping("/blog")
 public class BlogController {
@@ -51,6 +53,42 @@ public class BlogController {
 			msg.setCode(Const.STATUS_BIZ_ERROR);
 			msg.setMsg("系统错误，请稍后重试");
 		}
+		
+		return msg;
+	}
+	
+	@RequestMapping(value = "/newblog", method = RequestMethod.POST)
+	@ResponseBody
+	public Object addNewBlogSummary(HttpServletRequest request, @RequestParam(value="surface", required=false) MultipartFile surface) {
+	//public Object addNewBlogSummary(HttpServletRequest request) {
+		String title = request.getParameter("title");
+		String visitTime = request.getParameter("visitTime");
+		String location = request.getParameter("location");
+		String duration = request.getParameter("duration");
+		String userid = request.getParameter("userid");
+		String username = request.getParameter("username");
+		String desc = request.getParameter("desc");
+
+		BizMsg<String> msg = blogService.addNewBlogSummary(title, visitTime, location, duration, userid, username, desc, surface);
+		
+		
+		return msg;
+	}
+	
+	@RequestMapping(value = "/footprint", method = RequestMethod.POST)
+	@ResponseBody
+	public Object addNewFootPrint(HttpServletRequest request, @RequestParam(value="photo", required=false) MultipartFile photo) {
+	//public Object addNewBlogSummary(HttpServletRequest request) {
+		String userId = request.getParameter("userId");
+		String bId = request.getParameter("bId");
+		String desc = request.getParameter("desc");
+		String location = request.getParameter("location");
+		String lon = request.getParameter("lon");
+		String lat = request.getParameter("lat");
+		String visitTime = request.getParameter("visitTime");
+
+		BizMsg<String> msg = blogService.addNewBlogFootPrint(userId, bId, desc, location, lon, lat, visitTime, photo);
+		
 		
 		return msg;
 	}

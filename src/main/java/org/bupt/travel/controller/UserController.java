@@ -80,7 +80,7 @@ public class UserController {
 		
 		if(!avatar.isEmpty()) {
 			String filename = uid.concat(avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf(".")));
-			String avatarPath = Const.avatarPath.concat(filename);
+			String avatarPath = Const.avatarPersistPath.concat(filename);
 			
 			try {
 				avatar.transferTo(new File(avatarPath));

@@ -88,6 +88,20 @@ public class Photoinfo{
 
  
  
+	public Photoinfo(String photoName, String photoPath, Date createTime,
+			Integer status, Integer userId, Integer blogId,
+			Integer footprintId, Integer type) {
+		super();
+		this.photoName = photoName;
+		this.photoPath = photoPath;
+		this.createTime = createTime;
+		this.status = status;
+		this.userId = userId;
+		this.blogId = blogId;
+		this.footprintId = footprintId;
+		this.type = type;
+	}
+
 	public Photoinfo(){
 	}
 
