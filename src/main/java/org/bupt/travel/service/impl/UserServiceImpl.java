@@ -112,11 +112,6 @@ public class UserServiceImpl implements UserService{
 			msg.setMsg("请输入正确的密码");
 			return msg;
 		}
-		if(FunctionUtility.checkString(gender) && (gender.equals("0") == false &&gender.equals("1") == false )) {
-			msg.setCode(Const.STATUS_BIZ_ERROR);
-			msg.setMsg("请输入正确的性别信息");
-			return msg;
-		}
 		
 		List<User> userList = userDao.getUserInfoByName(username);
 		if(userList == null || userList.size() == 0) {
